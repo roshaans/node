@@ -6,8 +6,8 @@ ARG USER_GID=$USER_UID
 
 # Define URLs as environment variables
 ARG PUB_KEY_URL=https://raw.githubusercontent.com/hyperliquid-dex/node/refs/heads/main/pub_key.asc
-ARG HL_VISOR_URL=https://binaries.hyperliquid-testnet.xyz/Testnet/hl-visor
-ARG HL_VISOR_ASC_URL=https://binaries.hyperliquid-testnet.xyz/Testnet/hl-visor.asc
+ARG HL_VISOR_URL=https://binaries.hyperliquid-mainnet.xyz/Mainnet/hl-visor
+ARG HL_VISOR_ASC_URL=https://binaries.hyperliquid-mainnet.xyz/Mainnet/hl-visor.asc
 
 # Create user and install dependencies
 RUN groupadd --gid $USER_GID $USERNAME \
