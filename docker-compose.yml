@@ -7,7 +7,6 @@ services:
       - "3001:3001"
     volumes:
       - hl-data:/home/hluser/hl/data
-    entrypoint: ["/bin/bash", "/home/hluser/entrypoint.sh"]
 
   pruner:
     restart: unless-stopped
