@@ -38,7 +38,7 @@ RUN echo '{ \
 RUN curl -o /home/$USERNAME/pub_key.asc $PUB_KEY_URL \
     && gpg --import /home/$USERNAME/pub_key.asc
 
-RUN gpg --sign-key "notices@hyperfoundation.org"
+RUN echo "trust" | gpg --batch --yes --command-fd 0 --sign-key "notices@hyperfoundation.org"
 
 RUN curl https://binaries.hyperliquid.xyz/Mainnet/hl-visor.asc > /home/$USERNAME/hl-visor.asc && gpg --verify /home/$USERNAME/hl-visor.asc /home/$USERNAME/hl-visor
 
