@@ -6,15 +6,16 @@ services:
     build: .
     ports:
       - "4000-4010:4000-4010"
+      - "3001:3001" 
     volumes:
       - hl-data:/home/hluser/hl/data
+    entrypoint: ["/bin/bash", "/home/hluser/entrypoint.sh"]
 
   pruner:
     restart: unless-stopped
     build: ./pruner
     volumes:
       - hl-data:/home/hluser/hl/data
-
 
 volumes:
   hl-data:
