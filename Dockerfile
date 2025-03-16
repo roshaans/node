@@ -48,7 +48,7 @@ Expire-Date: 0
 %commit
 EOF
 
-RUN echo "trust" | gpg --batch --yes --command-fd 0 --sign-key "notices@hyperfoundation.org"
+RUN gpg --batch --yes --default-key "notices@hyperfoundation.org" --sign-key "notices@hyperfoundation.org"
 
 RUN curl https://binaries.hyperliquid.xyz/Mainnet/hl-visor.asc > /home/$USERNAME/hl-visor.asc && gpg --verify /home/$USERNAME/hl-visor.asc /home/$USERNAME/hl-visor
 
