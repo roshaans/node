@@ -29,7 +29,7 @@ RUN echo '{ \
     { "Ip": "199.254.199.190" }, { "Ip": "199.254.199.247" }, { "Ip": "74.226.182.22" } \
      \
   ], \
-  "try_new_peers": false, \
+  "try_new_peers": true, \
   "chain": "Mainnet" \
 }' > /home/$USERNAME/override_gossip_config.json
 
