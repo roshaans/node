@@ -50,7 +50,6 @@ EOF
 
 RUN gpg --batch --yes --default-key "notices@hyperfoundation.org" --sign-key "notices@hyperfoundation.org"
 
-RUN curl https://binaries.hyperliquid.xyz/Mainnet/hl-visor.asc > /home/$USERNAME/hl-visor.asc && gpg --verify /home/$USERNAME/hl-visor.asc /home/$USERNAME/hl-visor
 
 # Download and verify hl-visor binary
 RUN curl -o /home/$USERNAME/hl-visor $HL_VISOR_URL \
