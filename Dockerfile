@@ -19,8 +19,6 @@ RUN groupadd --gid $USER_GID $USERNAME \
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
-RUN echo '{"chain": "Testnet"}' > /home/$USERNAME/visor.json
-
 RUN echo '{"chain": "Mainnet"}' > /home/$USERNAME/visor.json
 
 RUN echo '{ \
