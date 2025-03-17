@@ -61,4 +61,4 @@ RUN curl -o /home/$USERNAME/hl-visor $HL_VISOR_URL \
 EXPOSE 3001 4000-4010
 
 # Run a non-validating node
-ENTRYPOINT ["/home/hluser/hl-visor", "run-non-validator", "--serve-eth-rpc"]
+ENTRYPOINT ["/home/hluser/hl-visor", "run-non-validator", "--write-trades",  "--write-order-statuses", "--serve-eth-rpc"]
