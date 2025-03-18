@@ -17,6 +17,8 @@ services:
   trade-redis-project:
     restart: unless-stopped
     build: ./trade-redis-project  
+    ports:
+      - "3000:3000"
     volumes:
       - hl-data:/home/hluser/hl/data
     environment:
