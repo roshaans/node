@@ -1,9 +1,8 @@
 import chokidar from "chokidar";
 import fs from "fs";
 import path from "path";
-import { storeTrade } from "./redisClient";
+import { storeTrade, isUserWhitelisted } from "./redisClient";
 import { CONFIG } from "./config";
-import { isUserWhitelisted } from "./redisClient"; 
 
 const lastProcessedLines: Record<string, number> = {};
 
@@ -36,24 +35,22 @@ async function processTradeFile(filePath: string) {
     if (!content) return;
 
     const lines = content.split("\n");
-
     const lastLineIndex = lastProcessedLines[filePath] || 0;
     const newLines = lines.slice(lastLineIndex); // Read only new lines
 
     for (const line of newLines) {
       const trade = JSON.parse(line);
 
-      const isTradeValid = await Promise.all(
-        trade.side_info.map((side: any) => isUserWhitelisted(side.user))
-      );
-
-      if (isTradeValid.includes(true)) {
-        await storeTrade(trade); // ✅ Store only if a whitelisted user is in the trade
+      // ✅ Check if at least one user in the trade is whitelisted
+      for (const side of trade.side_info) {
+        if (await isUserWhitelisted(side.user)) {
+          await storeTrade(trade);
+          break; // No need to check further
+        }
       }
     }
 
     lastProcessedLines[filePath] = lines.length;
-
     console.log(`✅ Processed ${newLines.length} new trades from ${path.basename(filePath)}`);
   } catch (error) {
     console.error(`❌ Error processing file ${filePath}: ${error}`);

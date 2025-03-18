@@ -4,7 +4,7 @@ import { CONFIG } from "./config";
 const redis = new Redis(CONFIG.REDIS_URL);
 
 /**
- * Store trade in Redis only for allowed users
+ * ✅ Store trade in Redis only for allowed users
  */
 export async function storeTrade(trade: any) {
   const timestamp = new Date(trade.time).getTime();
@@ -17,12 +17,10 @@ export async function storeTrade(trade: any) {
     const user = side.user;
     const userKey = `user_trades:${user}`;
 
-    // 🔍 Check if the user is allowed in Redis
-    const isAllowed = await redis.sismember("allowed_users", user);
-    if (!isAllowed) continue;  // Skip storing trade if user is not allowed
-
-    // ✅ Store trade only if the user is in the whitelist
-    await redis.zadd(userKey, timestamp, JSON.stringify(trade));
+    // 🔍 Check if the user is whitelisted
+    if (await isUserWhitelisted(user)) {
+      await redis.zadd(userKey, timestamp, JSON.stringify(trade));
+    }
   }
 
   // ✅ Mark trade as processed (Expire in 7 days)
@@ -30,7 +28,7 @@ export async function storeTrade(trade: any) {
 }
 
 /**
- * Retrieve a user's trade history in chronological order
+ * 📜 Retrieve a user's trade history in chronological order
  */
 export async function getUserTrades(user: string, startTime?: number, endTime?: number) {
   const userKey = `user_trades:${user}`;
@@ -38,7 +36,7 @@ export async function getUserTrades(user: string, startTime?: number, endTime?: 
 }
 
 /**
- * Add a user to the whitelist
+ * ✅ Add a user to the whitelist
  */
 export async function addUserToWhitelist(user: string) {
   await redis.sadd("allowed_users", user);
@@ -46,7 +44,7 @@ export async function addUserToWhitelist(user: string) {
 }
 
 /**
- * Remove a user from the whitelist
+ * ❌ Remove a user from the whitelist
  */
 export async function removeUserFromWhitelist(user: string) {
   await redis.srem("allowed_users", user);
@@ -54,13 +52,17 @@ export async function removeUserFromWhitelist(user: string) {
 }
 
 /**
- * Get all whitelisted users
+ * 📜 Get all whitelisted users
  */
 export async function getAllowedUsers() {
   return await redis.smembers("allowed_users");
 }
 
+/**
+ * 🔍 Check if a user is whitelisted
+ */
 export async function isUserWhitelisted(user: string): Promise<boolean> {
-  return await redis.sismember("whitelisted_users", user) === 1;
+  return (await redis.sismember("allowed_users", user)) === 1;
 }
+
 export default redis;
