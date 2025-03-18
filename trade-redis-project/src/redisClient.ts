@@ -60,4 +60,7 @@ export async function getAllowedUsers() {
   return await redis.smembers("allowed_users");
 }
 
+export async function isUserWhitelisted(user: string): Promise<boolean> {
+  return await redis.sismember("whitelisted_users", user) === 1;
+}
 export default redis;

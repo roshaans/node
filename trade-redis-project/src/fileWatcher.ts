@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { storeTrade } from "./redisClient";
 import { CONFIG } from "./config";
-import { isUserWhitelisted } from "./redisClient"; // ✅ Import whitelist checker
+import { isUserWhitelisted } from "./redisClient"; 
 
 const lastProcessedLines: Record<string, number> = {};
 
