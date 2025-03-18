@@ -65,4 +65,29 @@ export async function isUserWhitelisted(user: string): Promise<boolean> {
   return (await redis.sismember("allowed_users", user)) === 1;
 }
 
+export async function getLatestTradeTimestamp(): Promise<number | null> {
+  try {
+    // Get all user trades and find the latest timestamp
+    const users = await redis.smembers("allowed_users");
+    let latestTimestamp: number | null = null;
+
+    for (const user of users) {
+      const userKey = `user_trades:${user}`;
+      const latestTrade = await redis.zrevrangebyscore(userKey, "+inf", "-inf", "LIMIT", 0, 1);
+
+      if (latestTrade.length > 0) {
+        const trade = JSON.parse(latestTrade[0]);
+        const tradeTimestamp = new Date(trade.time).getTime();
+        if (!latestTimestamp || tradeTimestamp > latestTimestamp) {
+          latestTimestamp = tradeTimestamp;
+        }
+      }
+    }
+
+    return latestTimestamp;
+  } catch (error) {
+    console.error("❌ Error fetching latest trade timestamp:", error);
+    return null;
+  }
+}
 export default redis;
