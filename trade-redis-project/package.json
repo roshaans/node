@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "npm run build && node dist/index.js",
     "dev": "npm run build && ts-node src/index.ts",
     "test": "npm run build && ts-node src/query.ts",
     "test-trades": "ts-node src/writeFakeTrades.ts",
