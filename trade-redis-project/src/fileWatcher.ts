@@ -3,8 +3,8 @@ import fs from "fs";
 import path from "path";
 import { storeTrade } from "./redisClient";
 import { CONFIG } from "./config";
+import { isUserWhitelisted } from "./redisClient"; // ✅ Import whitelist checker
 
-// Store last processed line per file
 const lastProcessedLines: Record<string, number> = {};
 
 export function watchTradeFiles() {
@@ -19,34 +19,39 @@ export function watchTradeFiles() {
 
   watcher.on("add", async (filePath) => {
     console.log(`🆕 New trade file detected: ${filePath}`);
-    processTradeFile(filePath, true);
+    processTradeFile(filePath);
   });
 
   watcher.on("change", async (filePath) => {
     console.log(`✍ Trade file updated: ${filePath}`);
-    processTradeFile(filePath, false);
+    processTradeFile(filePath);
   });
 
   watcher.on("error", (error) => console.error(`❌ Watcher error: ${error}`));
 }
 
-async function processTradeFile(filePath: string, isNewFile: boolean) {
+async function processTradeFile(filePath: string) {
   try {
     const content = fs.readFileSync(filePath, "utf8").trim();
     if (!content) return;
 
     const lines = content.split("\n");
 
-    // Get the last processed line index
     const lastLineIndex = lastProcessedLines[filePath] || 0;
     const newLines = lines.slice(lastLineIndex); // Read only new lines
 
     for (const line of newLines) {
       const trade = JSON.parse(line);
-      await storeTrade(trade);
+
+      const isTradeValid = await Promise.all(
+        trade.side_info.map((side: any) => isUserWhitelisted(side.user))
+      );
+
+      if (isTradeValid.includes(true)) {
+        await storeTrade(trade); // ✅ Store only if a whitelisted user is in the trade
+      }
     }
 
-    // Update last processed line count
     lastProcessedLines[filePath] = lines.length;
 
     console.log(`✅ Processed ${newLines.length} new trades from ${path.basename(filePath)}`);
